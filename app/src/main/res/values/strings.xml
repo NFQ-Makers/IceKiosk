@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Ice Kiosk</string>
+    <string name="scan_card">Nuskenuok savo ID kortelę</string>
+    <string name="ice_count">Kiek ledų imsi?</string>
+    <string name="title_activity_user">UserActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_thank_you">ThankYouActivity</string>
+    <string name="no_connection">Deja, nėra interneto :( Kvieskite pagalbą!</string>
+    <string name="smth_wrong">Deja, kažkas nepavyko :( Pabandykite dar kartą arba kvieskite pagalbą!</string>
+</resources>
