@@ -6,6 +6,9 @@ public class UserData {
     private String userName;
     private String userNotes;
     private String userImageUrl;
+    private String idCard;
+    private int totalAmount;
+    private int totalPaid;
 
     public String getId() {
         return id;
@@ -37,5 +40,29 @@ public class UserData {
 
     public void setUserImageUrl(String userImageUrl) {
         this.userImageUrl = userImageUrl;
+    }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    public int getTotalPaid() {
+        return totalPaid;
+    }
+
+    public void setTotalPaid(int totalPaid) {
+        this.totalPaid = totalPaid;
+    }
+
+    public int getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(int totalAmount) {
+        this.totalAmount = totalAmount;
     }
 }

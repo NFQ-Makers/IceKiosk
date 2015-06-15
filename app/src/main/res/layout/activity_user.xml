@@ -9,18 +9,70 @@
     >
 
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="70dp"
-        android:layout_marginBottom="50dp">
+        android:layout_marginTop="70dp">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView"
-            android:src="@drawable/app_logo" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:layout_width="150sp"
+                android:layout_height="150sp"
+                android:id="@+id/imageUser"
+                android:src="@drawable/user"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView2"
+                android:src="@drawable/user_background"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:visibility="visible"
+                android:layout_marginLeft="155sp"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:layout_marginLeft="80dp"
+                android:layout_marginRight="80dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/userName"
+                    android:textSize="45sp"
+                    android:textStyle="bold"
+                    android:text="Tomas"
+                    android:background="@android:color/transparent"
+                    android:layout_alignParentEnd="false"
+                    android:layout_alignParentStart="false"
+                    android:autoText="false"
+                    android:gravity="center"
+                    android:layout_marginTop="180dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/userNotes"
+                    android:textSize="24sp"
+                    android:layout_marginTop="30dp"
+                    android:gravity="center" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -35,64 +87,6 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:background="@android:color/transparent">
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:layout_marginLeft="50dp"
-                android:layout_marginRight="50dp">
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:background="@android:color/transparent">
-
-                    <ImageView
-                        android:layout_width="163sp"
-                        android:layout_height="163sp"
-                        android:id="@+id/imageUser"
-                        android:src="@drawable/user"
-                        android:layout_marginTop="10dp" />
-
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
-                        android:layout_weight="1"
-                        android:background="@android:color/transparent"
-                        android:layout_marginLeft="30dp"
-                        android:layout_marginTop="-10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/userName"
-                            android:textSize="45sp"
-                            android:textStyle="bold" />
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="fill_parent"
-                            android:layout_height="2dp"
-                            android:background="@android:color/black"
-                            android:layout_marginBottom="10dp"
-                            android:layout_marginTop="5dp"></LinearLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text=""
-                            android:id="@+id/userNotes"
-                            android:textSize="20sp" />
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
@@ -197,6 +191,15 @@
                     android:src="@drawable/button_primary_res"
                     android:layout_gravity="center_horizontal|left"
                     android:background="@android:color/transparent" />
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/payButton"
+                    android:src="@drawable/button_pay_res"
+                    android:layout_gravity="center_horizontal|left"
+                    android:background="@android:color/transparent"
+                    android:layout_marginTop="40dp"/>
 
                 <ImageButton
                     android:layout_width="wrap_content"

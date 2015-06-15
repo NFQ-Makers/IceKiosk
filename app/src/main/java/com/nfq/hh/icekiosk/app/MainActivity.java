@@ -13,7 +13,7 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-public class MainActivity extends BaseActivity implements View.OnClickListener{
+public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView tv1, tv2, tvPortionCount;
     private ImageButton plusButton, minusButton;
@@ -29,11 +29,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         linearLayout.requestFocus();
 
         tv1 = (TextView) findViewById(R.id.textView1);
-        tv1.setTypeface(tfRegular);
+        tv1.setTypeface(tfChaparralProRegular);
         tv2 = (TextView) findViewById(R.id.textView2);
-        tv2.setTypeface(tfRegular);
+        tv2.setTypeface(tfChaparralProRegular);
         tvPortionCount = (TextView) findViewById(R.id.portionCount);
-        tvPortionCount.setTypeface(tfBold);
+        tvPortionCount.setTypeface(tfChaparralProBold);
 
         plusButton = (ImageButton) findViewById(R.id.plusButton);
         plusButton.setOnClickListener(this);

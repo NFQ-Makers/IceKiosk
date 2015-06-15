@@ -37,7 +37,8 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
     private TextView textQty, tvPortionCount;
     private Integer portionCount;
     private String userId;
-    private ImageButton plusButton, minusButton, cancelButton, primaryButton;
+    private ImageButton plusButton, minusButton, cancelButton, primaryButton, payButton;
+    private UserData d;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,17 +52,17 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
         userId = getIntent().getStringExtra("userId");
 
         if (isOnline()) {
-            new LoadDataTask().execute();
+            new LoadUserDataTask().execute();
         }
         else {
             finish();
         }
 
         textQty = (TextView) findViewById(R.id.textQty);
-        textQty.setTypeface(tfItalic);
+        textQty.setTypeface(tfChaparralProItalic);
 
         tvPortionCount = (TextView) findViewById(R.id.portionCount);
-        tvPortionCount.setTypeface(tfBold);
+        tvPortionCount.setTypeface(tfChaparralProBold);
         tvPortionCount.setText(String.valueOf(portionCount));
 
         cancelButton = (ImageButton) findViewById(R.id.cancelButton);
@@ -75,6 +76,9 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
         plusButton = (ImageButton) findViewById(R.id.plusButton);
         plusButton.setOnClickListener(this);
+
+        payButton = (ImageButton) findViewById(R.id.payButton);
+        payButton.setOnClickListener(this);
 
         //Get a Tracker (should auto-report)
         ((IceKioskApplication) getApplication()).getTracker(IceKioskApplication.TrackerName.APP_TRACKER);
@@ -125,17 +129,22 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                     tvPortionCount.setText(String.valueOf(portionCount));
                 }
                 break;
+            case R.id.payButton:
+                Intent iPay = new Intent(getApplicationContext(), PayActivity.class);
+                iPay.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                iPay.setAction("action" + System.currentTimeMillis());
+                startActivity(iPay);
             default:
                 break;
         }
     }
 
-    private class LoadDataTask extends AsyncTask<Void, UserData, UserData> {
+    private class LoadUserDataTask extends AsyncTask<Void, UserData, UserData> {
 
         @Override
         protected UserData doInBackground(Void... params) {
             try {
-                String url = API_URL_USERINFOBYRFID;
+                String url = API_URL_USERDATA_DOMAIN + API_URL_USERDATA_PATH;
                 url = url.replace("%d", userId);
                 URL u = new URL(url);
 
@@ -144,11 +153,15 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
                 try {
                     JSONObject jo = new JSONObject(in.readLine());
+                    JSONObject person = jo.getJSONArray("people").getJSONObject(0);
+
                     UserData d = new UserData();
-                    d.setId(jo.getJSONObject("user").getString("id"));
-                    d.setUserName(jo.getJSONObject("user").getString("firstName"));
-                    d.setUserNotes(jo.getJSONObject("info").getString("text"));
-                    d.setUserImageUrl(jo.getJSONObject("user").getString("img"));
+                    d.setId(person.getString("intranet_id"));
+                    String name[] = person.getString("full_name").split(" ");
+                    d.setUserName(name[0].trim());
+                    d.setUserImageUrl(API_URL_USERDATA_DOMAIN + person.getJSONObject("photo").getString("url"));
+                    d.setIdCard(person.getString("id_card"));
+
                     return d;
                 } catch (JSONException e) {
                     Log.d("", e.toString());
@@ -167,13 +180,60 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
             if (d != null) {
                 TextView userName = (TextView) findViewById(R.id.userName);
                 userName.setText(d.getUserName());
-
-                TextView userNotes = (TextView) findViewById(R.id.userNotes);
-                userNotes.setText(Html.fromHtml(d.getUserNotes()));
-
+                new LoadUserInfoTask().execute(d);
                 new DownloadImageTask((ImageView) findViewById(R.id.imageUser)).execute(d.getUserImageUrl());
             } else {
                 Toast.makeText(getApplicationContext(), R.string.smth_wrong, Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }
+    }
+
+    private class LoadUserInfoTask extends AsyncTask<UserData, UserData, UserData> {
+
+        @Override
+        protected UserData doInBackground(UserData... userDatas) {
+            UserData d = userDatas[0];
+
+            try {
+                String url = API_URL_USERINFO;
+                url = url.replace("%d", d.getIdCard());
+                Log.d("", url);
+                URL u = new URL(url);
+
+                URLConnection tc = u.openConnection();
+                BufferedReader in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
+
+                try {
+                    JSONObject jo = new JSONObject(in.readLine());
+                    d.setTotalAmount(jo.getJSONObject("info").getInt("totalAmount"));
+                    d.setTotalPaid(jo.getJSONObject("info").getInt("totalPaid"));
+                    d.setUserNotes(jo.getJSONObject("info").getString("text"));
+
+                    return d;
+                } catch (JSONException e) {
+                    Log.d("", e.toString());
+                }
+
+
+            } catch (NullPointerException e ){
+                Log.d("", e.toString());
+            } catch (Exception e) {
+                Log.d("", e.toString());
+            }
+            return null;
+        }
+
+        protected void onPostExecute(UserData d) {
+            if (d != null) {
+                TextView userNotes = (TextView) findViewById(R.id.userNotes);
+                userNotes.setText(Html.fromHtml(d.getUserNotes()));
+
+                UserActivity.this.d = d;
+
+                Log.d("", UserActivity.this.d.getUserName());
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.smth_wrong2, Toast.LENGTH_LONG).show();
                 finish();
             }
         }

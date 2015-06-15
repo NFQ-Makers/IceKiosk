@@ -8,5 +8,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_thank_you">ThankYouActivity</string>
     <string name="no_connection">Deja, nėra interneto :( Kvieskite pagalbą!</string>
-    <string name="smth_wrong">Deja, kažkas nepavyko :( Pabandykite dar kartą arba kvieskite pagalbą!</string>
+    <string name="smth_wrong">Deja, nepavyko tavęs atpažinti :( Pabandyk dar kartą arba kviesk pagalbą!</string>
+    <string name="smth_wrong2">Deja, nepavyko sužinoti kiek ledų suvalgei :( Pabandyk dar kartą arba kviesk pagalbą!</string>
+    <string name="title_activity_pay">PayActivity</string>
 </resources>

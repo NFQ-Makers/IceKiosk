@@ -13,8 +13,7 @@ import java.util.Properties;
 
 public class BaseActivity extends Activity implements View.OnKeyListener {
 
-    protected Typeface tfRegular, tfBold, tfItalic;
-    protected Properties properties;
+    protected Typeface tfChaparralProRegular, tfChaparralProBold, tfChaparralProItalic;
     protected Integer minPortionCount = 1, maxPortionCount = 9;
 
     // configurable values
@@ -26,9 +25,9 @@ public class BaseActivity extends Activity implements View.OnKeyListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        tfRegular = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Regular.otf");
-        tfBold = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Bold.otf");
-        tfItalic = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Italic.otf");
+	tfChaparralProRegular = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Regular.otf");
+	tfChaparralProBold = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Bold.otf");
+	tfChaparralProItalic = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Italic.otf");
     }
 
     @Override

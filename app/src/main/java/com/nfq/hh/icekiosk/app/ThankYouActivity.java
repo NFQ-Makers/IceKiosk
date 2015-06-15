@@ -24,10 +24,10 @@ public class ThankYouActivity extends BaseActivity implements View.OnClickListen
         linearLayout.requestFocus();
 
         TextView tv1 = (TextView) findViewById(R.id.textView1);
-        tv1.setTypeface(tfBold);
+        tv1.setTypeface(tfChaparralProBold);
 
         TextView tv2 = (TextView) findViewById(R.id.textView2);
-        tv2.setTypeface(tfRegular);
+        tv2.setTypeface(tfChaparralProRegular);
 
         ImageView imageSuccess = (ImageView) findViewById(R.id.imageSuccess);
         imageSuccess.setOnClickListener(this);
