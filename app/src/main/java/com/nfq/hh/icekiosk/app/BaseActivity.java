@@ -28,6 +28,14 @@ public class BaseActivity extends Activity implements View.OnKeyListener {
 	tfChaparralProRegular = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Regular.otf");
 	tfChaparralProBold = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Bold.otf");
 	tfChaparralProItalic = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Italic.otf");
+	tfChaparralProRegular = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Regular.otf");
+	tfChaparralProBold = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Bold.otf");
+	tfChaparralProItalic = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Italic.otf");
+
+	tfSourceSansProRegular = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Regular.ttf");
+	tfSourceSansProBold = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Bold.ttf");
+	tfSourceSansProItalic = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Italic.ttf");
+	tfSourceSansProLight = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Light.ttf");
     }
 
     @Override
