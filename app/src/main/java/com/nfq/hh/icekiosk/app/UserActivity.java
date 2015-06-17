@@ -130,10 +130,16 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 }
                 break;
             case R.id.payButton:
-                Intent iPay = new Intent(getApplicationContext(), PayActivity.class);
-                iPay.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                iPay.setAction("action" + System.currentTimeMillis());
-                startActivity(iPay);
+                if (isOnline()) {
+                    Intent iPay = new Intent(getApplicationContext(), PayActivity.class);
+                    iPay.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    iPay.setAction("action" + System.currentTimeMillis());
+                    iPay.putExtra("userId", userId);
+                    iPay.putExtra("totalAmount", d.getTotalAmount());
+                    iPay.putExtra("totalPaid", d.getTotalPaid());
+                    iPay.putExtra("portionCount", portionCount);
+                    startActivity(iPay);
+                }
             default:
                 break;
         }
@@ -180,6 +186,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
             if (d != null) {
                 TextView userName = (TextView) findViewById(R.id.userName);
                 userName.setText(d.getUserName());
+                userName.setTypeface(tfSourceSansProBold);
                 new LoadUserInfoTask().execute(d);
                 new DownloadImageTask((ImageView) findViewById(R.id.imageUser)).execute(d.getUserImageUrl());
             } else {
@@ -198,7 +205,6 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
             try {
                 String url = API_URL_USERINFO;
                 url = url.replace("%d", d.getIdCard());
-                Log.d("", url);
                 URL u = new URL(url);
 
                 URLConnection tc = u.openConnection();
@@ -228,10 +234,9 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
             if (d != null) {
                 TextView userNotes = (TextView) findViewById(R.id.userNotes);
                 userNotes.setText(Html.fromHtml(d.getUserNotes()));
+                userNotes.setTypeface(tfSourceSansProRegular);
 
                 UserActivity.this.d = d;
-
-                Log.d("", UserActivity.this.d.getUserName());
             } else {
                 Toast.makeText(getApplicationContext(), R.string.smth_wrong2, Toast.LENGTH_LONG).show();
                 finish();

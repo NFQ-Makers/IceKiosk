@@ -54,7 +54,6 @@
                     android:id="@+id/userName"
                     android:textSize="45sp"
                     android:textStyle="bold"
-                    android:text="Tomas"
                     android:background="@android:color/transparent"
                     android:layout_alignParentEnd="false"
                     android:layout_alignParentStart="false"
@@ -63,12 +62,13 @@
                     android:layout_marginTop="180dp" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/userNotes"
                     android:textSize="24sp"
                     android:layout_marginTop="30dp"
-                    android:gravity="center" />
+                    android:gravity="center"
+                    android:minLines="2" />
             </LinearLayout>
 
         </RelativeLayout>

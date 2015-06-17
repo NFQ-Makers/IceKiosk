@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="background" type="color">#96E6DC</item>
+    <item name="background_pay_active" type="color">#DCDCDC</item>
 </resources>
