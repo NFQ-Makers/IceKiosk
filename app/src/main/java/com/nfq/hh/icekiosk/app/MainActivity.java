@@ -123,6 +123,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             i.putExtra("portionCount", portionCount);
             i.putExtra("userId", keyBoardChars);
             i.setAction("action" + System.currentTimeMillis());
+
             // reset keyboard chars
             keyBoardChars = "";
             startActivity(i);

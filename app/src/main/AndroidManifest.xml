@@ -58,6 +58,15 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".PayThankYouActivity"
+            android:label="@string/title_activity_pay_thank_you"
+            android:parentActivityName=".BaseActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.nfq.hh.icekiosk.app.BaseActivity" />
+        </activity>
     </application>
 
 </manifest>

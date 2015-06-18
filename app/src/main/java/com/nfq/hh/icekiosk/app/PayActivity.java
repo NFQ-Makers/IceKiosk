@@ -1,15 +1,28 @@
 package com.nfq.hh.icekiosk.app;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.media.Image;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * min 1
@@ -23,7 +36,7 @@ public class PayActivity extends BaseActivity implements View.OnClickListener {
     private String userId;
     private Integer portionCount;
     private TextView textView1, textView2, textView3, textView4, textView5, textView6, textView7, textView8, textView9, textView10;
-    private double payAmount, unpaidSum;
+    private double payAmount, unPaidSum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +47,7 @@ public class PayActivity extends BaseActivity implements View.OnClickListener {
         Integer totalPaid = getIntent().getIntExtra("totalPaid", 0);
         portionCount = getIntent().getIntExtra("portionCount", 0);
         userId = getIntent().getStringExtra("userId");
-        unpaidSum = (totalAmount - totalPaid) * ICE_PRICE;
-        payAmount = unpaidSum;
+        payAmount = unPaidSum = (totalAmount - totalPaid) * ICE_PRICE;
         double x1, x2, x3, x4, x5;
 
         x1 = 1 * ICE_PRICE;
@@ -45,11 +57,11 @@ public class PayActivity extends BaseActivity implements View.OnClickListener {
             x3 = x1;
         }
         x4 = (totalAmount - totalPaid) / 5 * 3 * ICE_PRICE;
-        x5 = unpaidSum;
+        x5 = unPaidSum;
 
         textView1 = (TextView) findViewById(R.id.textView1);
         textView1.setTypeface(tfChaparralProRegular);
-        textView1.setText(Html.fromHtml(textView1.getText() + "<b>" + String.format("%.2f", unpaidSum) + "</b>"));
+        textView1.setText(Html.fromHtml(textView1.getText() + "<b>" + String.format("%.2f", unPaidSum) + "</b>"));
 
         textView2 = (TextView) findViewById(R.id.textView2);
         textView2.setTypeface(tfSourceSansProLight);
@@ -62,7 +74,7 @@ public class PayActivity extends BaseActivity implements View.OnClickListener {
 
         textView5 = (TextView) findViewById(R.id.textView5);
         textView5.setTypeface(tfChaparralProBold);
-        textView5.setText(String.format("%.2f", unpaidSum));
+        textView5.setText(String.format("%.2f", unPaidSum));
 
         textView6 = (TextView) findViewById(R.id.textView6);
         textView6.setTypeface(tfSourceSansProBold);
@@ -118,23 +130,44 @@ public class PayActivity extends BaseActivity implements View.OnClickListener {
 
         ImageButton payMinusButton = (ImageButton) findViewById(R.id.payMinusButton);
         payMinusButton.setOnClickListener(this);
+
+        //Get a Tracker (should auto-report)
+        ((IceKioskApplication) getApplication()).getTracker(IceKioskApplication.TrackerName.APP_TRACKER);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        //Get an Analytics tracker to report app starts & uncaught exceptions etc.
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        //Stop the analytics tracking
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.backButton:
-                Intent i = new Intent(getApplicationContext(), UserActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                i.putExtra("portionCount", portionCount);
-                i.putExtra("userId", userId);
-                i.setAction("action" + System.currentTimeMillis());
-                startActivity(i);
+                if (isOnline()) {
+                    Intent i = new Intent(getApplicationContext(), UserActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    i.putExtra("portionCount", portionCount);
+                    i.putExtra("userId", userId);
+                    i.setAction("action" + System.currentTimeMillis());
+                    startActivity(i);
+                }
                 break;
             case R.id.payPlusButton:
                 payAmount = payAmount + ICE_PRICE;
-                if (payAmount > unpaidSum) {
-                    payAmount = unpaidSum;
+                if (payAmount > unPaidSum) {
+                    payAmount = unPaidSum;
                 }
                 textView5.setText(String.format("%.2f", payAmount));
                 break;
@@ -154,8 +187,80 @@ public class PayActivity extends BaseActivity implements View.OnClickListener {
                 textView5.setText(tv.getText().toString());
                 payAmount = Double.parseDouble(tv.getText().toString());
                 break;
+            case R.id.payButton:
+                if (isOnline()) {
+                    new SendDataTask().execute();
+                }
+                break;
             default:
                 break;
+        }
+    }
+
+    private class SendDataTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            String url = API_URL_EVENT;
+            try {
+                URL u = new URL(url);
+                HttpURLConnection urlConn = (HttpURLConnection) u.openConnection();
+                urlConn.setRequestMethod("POST");
+                urlConn.setRequestProperty("Content-Type", "application/json");
+                urlConn.setDoOutput(true);
+                urlConn.setDoInput(true);
+                urlConn.connect();
+
+                // [{"time":{"sec":1398619851,"usec":844563},"deviceId":321,"type":"IceCreamPay", "data":{"userId":0,"amount":-1}}]
+                JSONArray jsonParams = new JSONArray();
+                jsonParams.put(
+                        new JSONObject()
+                                .put("deviceId", API_DEVICEID)
+                                .put("type", "IceScreamPay")
+                                .put("time", new JSONObject().put("sec", System.currentTimeMillis() / 1000).put("usec", 0))
+                                .put("data", new JSONObject().put("userId", userId).put("amount", payAmount / -ICE_PRICE))
+                );
+                Log.d("", jsonParams.toString());
+
+                DataOutputStream os = new DataOutputStream(urlConn.getOutputStream());
+                os.write(jsonParams.toString().getBytes("UTF-8"));
+                os.flush();
+                os.close();
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
+                try {
+                    JSONObject jo = new JSONObject(in.readLine());
+                    // {"status":"ok"}
+                    if (jo.getString("status").equals("ok")) {
+                        return true;
+                    }
+                } catch (JSONException e) {
+//                    Log.d("", e.toString());
+                    return false;
+                }
+            } catch (Exception e) {
+//                Log.d("", e.toString());
+                return false;
+            }
+
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (result) {
+                Tracker t = GoogleAnalytics.getInstance(getBaseContext()).newTracker(IceKioskApplication.PROPERTY_ID);
+                t.send(new HitBuilders.EventBuilder().setCategory("UX").setAction("User Pay").setLabel(userId).setValue((long)payAmount).build());
+
+                Intent i = new Intent(getApplicationContext(), PayThankYouActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                i.setAction("action" + System.currentTimeMillis());
+                i.putExtra("paidSum", payAmount);
+                i.putExtra("unPaidSum", unPaidSum - payAmount);
+                startActivity(i);
+            } else {
+                Toast.makeText(getApplicationContext(), R.string.smth_wrong, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

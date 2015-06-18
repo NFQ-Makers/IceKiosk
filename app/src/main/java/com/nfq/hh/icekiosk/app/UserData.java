@@ -2,20 +2,20 @@ package com.nfq.hh.icekiosk.app;
 
 public class UserData {
 
-    private String id;
+    private Integer intranetId;
     private String userName;
     private String userNotes;
     private String userImageUrl;
     private String idCard;
-    private int totalAmount;
-    private int totalPaid;
+    private Integer totalAmount;
+    private Integer totalPaid;
 
-    public String getId() {
-        return id;
+    public Integer getIntranetId() {
+        return intranetId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setIntranetId(Integer intranetId) {
+        this.intranetId = intranetId;
     }
 
     public String getUserName() {

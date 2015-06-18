@@ -1,0 +1,56 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ačiū!"
+        android:id="@+id/tyTextView"
+        android:layout_marginTop="81dp"
+        android:textSize="120sp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sumokėjai 40 € / Liko 38 €"
+        android:id="@+id/textView2"
+        android:textSize="30sp"
+        android:layout_below="@+id/tyTextView"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Už surinktus pinigus pirksim kokį nors įdomų gadget’ą į biurą"
+        android:id="@+id/textView3"
+        android:layout_marginTop="49dp"
+        android:textSize="24sp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp"
+        android:gravity="center"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="81dp"
+        android:src="@drawable/smile"
+        android:layout_below="@+id/textView3"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/imageView3" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tyBackButton"
+        android:src="@drawable/button_ty_back_res"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="79dp"
+        android:layout_below="@+id/imageView3"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

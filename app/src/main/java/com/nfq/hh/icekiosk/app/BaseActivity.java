@@ -14,28 +14,28 @@ import java.util.Properties;
 public class BaseActivity extends Activity implements View.OnKeyListener {
 
     protected Typeface tfChaparralProRegular, tfChaparralProBold, tfChaparralProItalic;
+    protected Typeface tfSourceSansProRegular, tfSourceSansProBold, tfSourceSansProItalic, tfSourceSansProLight;
     protected Integer minPortionCount = 1, maxPortionCount = 9;
 
     // configurable values
     protected final String API_DEVICEID = "IceKiosk_1";
-    protected final String API_URL_USERINFOBYRFID = "http://url/to/userInfo/%d";
-    protected final String API_URL_EVENT = "http:/url/to/event";
+    protected final double ICE_PRICE = 0.25;
+    protected final String API_URL_USERDATA = "";
+    protected final String API_URL_USERINFO = "";
+    protected final String API_URL_EVENT = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-	tfChaparralProRegular = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Regular.otf");
-	tfChaparralProBold = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Bold.otf");
-	tfChaparralProItalic = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Italic.otf");
-	tfChaparralProRegular = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Regular.otf");
-	tfChaparralProBold = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Bold.otf");
-	tfChaparralProItalic = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Italic.otf");
+        tfChaparralProRegular = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Regular.otf");
+        tfChaparralProBold = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Bold.otf");
+        tfChaparralProItalic = Typeface.createFromAsset(getAssets(), "fonts/ChaparralPro_Italic.otf");
 
-	tfSourceSansProRegular = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Regular.ttf");
-	tfSourceSansProBold = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Bold.ttf");
-	tfSourceSansProItalic = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Italic.ttf");
-	tfSourceSansProLight = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Light.ttf");
+        tfSourceSansProRegular = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Regular.ttf");
+        tfSourceSansProBold = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Bold.ttf");
+        tfSourceSansProItalic = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Italic.ttf");
+        tfSourceSansProLight = Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Light.ttf");
     }
 
     @Override

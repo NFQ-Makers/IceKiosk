@@ -5,8 +5,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/LinearLayout"
     android:focusable="true"
-    android:focusableInTouchMode="true"
-    >
+    android:focusableInTouchMode="true">
 
     <LinearLayout
         android:orientation="vertical"
@@ -59,14 +58,29 @@
                     android:layout_alignParentStart="false"
                     android:autoText="false"
                     android:gravity="center"
-                    android:layout_marginTop="180dp" />
+                    android:layout_marginTop="180dp"
+                    android:layout_marginBottom="15dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/totalAmount"
+                    android:gravity="center"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/totalPaid"
+                    android:gravity="center"
+                    android:textSize="24sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/userNotes"
                     android:textSize="24sp"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="15dp"
                     android:gravity="center"
                     android:minLines="2" />
             </LinearLayout>
@@ -85,7 +99,6 @@
             android:orientation="vertical"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_weight="1"
             android:background="@android:color/transparent">
 
             <LinearLayout
@@ -93,7 +106,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:layout_marginTop="70dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginRight="75dp"
                 android:layout_marginLeft="75dp"
                 android:layout_marginBottom="30dp">
@@ -199,7 +212,9 @@
                     android:src="@drawable/button_pay_res"
                     android:layout_gravity="center_horizontal|left"
                     android:background="@android:color/transparent"
-                    android:layout_marginTop="40dp"/>
+                    android:layout_marginTop="40dp"
+                    android:alpha="0.5"
+                    android:clickable="false" />
 
                 <ImageButton
                     android:layout_width="wrap_content"

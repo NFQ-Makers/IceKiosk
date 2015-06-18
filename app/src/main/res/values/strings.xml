@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Ice Kiosk</string>
     <string name="scan_card">Nuskenuok savo ID kortelę</string>
     <string name="ice_count">Kiek ledų imsi?</string>
@@ -11,4 +10,5 @@
     <string name="smth_wrong">Deja, nepavyko tavęs atpažinti :( Pabandyk dar kartą arba kviesk pagalbą!</string>
     <string name="smth_wrong2">Deja, nepavyko sužinoti kiek ledų suvalgei :( Pabandyk dar kartą arba kviesk pagalbą!</string>
     <string name="title_activity_pay">PayActivity</string>
+    <string name="title_activity_pay_thank_you">PayThankYouActivity</string>
 </resources>

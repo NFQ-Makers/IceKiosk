@@ -79,6 +79,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
         payButton = (ImageButton) findViewById(R.id.payButton);
         payButton.setOnClickListener(this);
+        payButton.setClickable(false);
 
         //Get a Tracker (should auto-report)
         ((IceKioskApplication) getApplication()).getTracker(IceKioskApplication.TrackerName.APP_TRACKER);
@@ -150,7 +151,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
         @Override
         protected UserData doInBackground(Void... params) {
             try {
-                String url = API_URL_USERDATA_DOMAIN + API_URL_USERDATA_PATH;
+                String url = API_URL_USERDATA;
                 url = url.replace("%d", userId);
                 URL u = new URL(url);
 
@@ -162,20 +163,20 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                     JSONObject person = jo.getJSONArray("people").getJSONObject(0);
 
                     UserData d = new UserData();
-                    d.setId(person.getString("intranet_id"));
+                    d.setIntranetId(person.getInt("intranet_id"));
                     String name[] = person.getString("full_name").split(" ");
                     d.setUserName(name[0].trim());
-                    d.setUserImageUrl(API_URL_USERDATA_DOMAIN + person.getJSONObject("photo").getString("url"));
+                    d.setUserImageUrl(u.getProtocol() + "://" + u.getHost() + person.getJSONObject("photo").getString("url"));
                     d.setIdCard(person.getString("id_card"));
 
                     return d;
                 } catch (JSONException e) {
-                    Log.d("", e.toString());
+//                    Log.d("", e.toString());
                 }
             } catch (NullPointerException e ){
-                Log.d("", e.toString());
+//                Log.d("", e.toString());
             } catch (Exception e) {
-                Log.d("", e.toString());
+//                Log.d("", e.toString());
             }
 
             return null;
@@ -204,7 +205,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
             try {
                 String url = API_URL_USERINFO;
-                url = url.replace("%d", d.getIdCard());
+                url = url.replace("%s", d.getIdCard());
                 URL u = new URL(url);
 
                 URLConnection tc = u.openConnection();
@@ -218,25 +219,39 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
                     return d;
                 } catch (JSONException e) {
-                    Log.d("", e.toString());
+//                    Log.d("", e.toString());
                 }
 
 
             } catch (NullPointerException e ){
-                Log.d("", e.toString());
+//                Log.d("", e.toString());
             } catch (Exception e) {
-                Log.d("", e.toString());
+//                Log.d("", e.toString());
             }
             return null;
         }
 
         protected void onPostExecute(UserData d) {
             if (d != null) {
+                TextView tvTotalAmount = (TextView) findViewById(R.id.totalAmount);
+                tvTotalAmount.setTypeface(tfSourceSansProRegular);
+                tvTotalAmount.setText("Suvalgei: " + String.valueOf(d.getTotalAmount()));
+
+
+                TextView tvTotalPaid = (TextView) findViewById(R.id.totalPaid);
+                tvTotalPaid.setTypeface(tfSourceSansProRegular);
+                tvTotalPaid.setText("Apmokėjai: " + String.valueOf(d.getTotalPaid()));
+
                 TextView userNotes = (TextView) findViewById(R.id.userNotes);
                 userNotes.setText(Html.fromHtml(d.getUserNotes()));
                 userNotes.setTypeface(tfSourceSansProRegular);
 
                 UserActivity.this.d = d;
+
+                if (d.getTotalAmount() - d.getTotalPaid() != 0) {
+                    payButton.setAlpha((float)1);
+                    payButton.setClickable(true);
+                }
             } else {
                 Toast.makeText(getApplicationContext(), R.string.smth_wrong2, Toast.LENGTH_LONG).show();
                 finish();
@@ -260,7 +275,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 mBitmap = BitmapFactory.decodeStream(new FileInputStream(file));
             }
             catch (FileNotFoundException e) {
-                Log.d("", e.toString());
+//                Log.d("", e.toString());
             }
 
             return mBitmap;
@@ -310,11 +325,11 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                         return true;
                     }
                 } catch (JSONException e) {
-                    Log.d("", e.toString());
+//                    Log.d("", e.toString());
                     return false;
                 }
             } catch (Exception e) {
-                Log.d("", e.toString());
+//                Log.d("", e.toString());
                 return false;
             }
 
@@ -343,7 +358,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                                 .setTransactionId(transactioId)
                                 .setName("IceScream")
                                 .setSku("1")
-                                .setPrice(1)
+                                .setPrice(ICE_PRICE)
                                 .setQuantity(portionCount)
                                 .build()
                 );
