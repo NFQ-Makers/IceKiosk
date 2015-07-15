@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -114,6 +113,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     public void startUserActivity() {
         if (isOnline()) {
+            // strip leading 0 from userId
+            keyBoardChars = keyBoardChars.replaceFirst("^0+(?!$)", "");
+
             Tracker t = GoogleAnalytics.getInstance(this).newTracker(IceKioskApplication.PROPERTY_ID);
             t.send(new HitBuilders.EventBuilder().setCategory("UX").setAction("User Sign In").setLabel(keyBoardChars).build());
             t.set("&uid", keyBoardChars);
