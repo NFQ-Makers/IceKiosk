@@ -216,7 +216,7 @@ public class PayActivity extends BaseActivity implements View.OnClickListener {
                 jsonParams.put(
                         new JSONObject()
                                 .put("deviceId", API_DEVICEID)
-                                .put("type", "IceScreamPay")
+                                .put("type", "IceCreamPay")
                                 .put("time", new JSONObject().put("sec", System.currentTimeMillis() / 1000).put("usec", 0))
                                 .put("data", new JSONObject().put("userId", userId).put("amount", payAmount / -ICE_PRICE))
                 );
