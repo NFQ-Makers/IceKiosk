@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -17,6 +18,10 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -154,28 +159,35 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 url = url.replace("%d", userId);
                 URL u = new URL(url);
 
-                URLConnection tc = u.openConnection();
-                BufferedReader in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
+                HttpClient httpclient = new NfqHttpClient(getBaseContext());
+                HttpGet httpGet = new HttpGet(url);
+                HttpResponse response;
 
                 try {
+                    response = httpclient.execute(httpGet);
+
+                    HttpEntity entity = response.getEntity();
+                    BufferedReader in = new BufferedReader(new InputStreamReader(entity.getContent()));
+
                     JSONObject jo = new JSONObject(in.readLine());
+
                     JSONObject person = jo.getJSONArray("people").getJSONObject(0);
 
                     UserData d = new UserData();
                     d.setIntranetId(person.getInt("intranet_id"));
                     String name[] = person.getString("full_name").split(" ");
                     d.setUserName(name[0].trim());
-                    d.setUserImageUrl(u.getProtocol() + "://" + u.getHost() + person.getJSONObject("photo").getString("url"));
+                    d.setUserImageUrl(u.getProtocol() + "://" + u.getHost() + person.getJSONObject("photo").getString("url").replace("avatar/30/30", "media/team"));
                     d.setIdCard(person.getString("id_card"));
 
                     return d;
                 } catch (JSONException e) {
-//                    Log.d("", e.toString());
+                    Log.d("", e.toString());
                 }
             } catch (NullPointerException e ){
-//                Log.d("", e.toString());
+                Log.d("", e.toString());
             } catch (Exception e) {
-//                Log.d("", e.toString());
+                Log.d("", e.toString());
             }
 
             return null;
@@ -190,8 +202,8 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 new LoadUserInfoTask().execute(d);
                 new DownloadImageTask((ImageView) findViewById(R.id.imageUser)).execute(d.getUserImageUrl());
             } else {
-                Toast.makeText(getApplicationContext(), R.string.smth_wrong, Toast.LENGTH_LONG).show();
-                finish();
+		Toast.makeText(getApplicationContext(), R.string.smth_wrong, Toast.LENGTH_LONG).show();
+		finish();
             }
         }
     }
@@ -205,6 +217,8 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
             try {
                 String url = API_URL_USERINFO;
                 url = url.replace("%s", d.getIdCard());
+                url = url.replace(" ", "%20");
+
                 URL u = new URL(url);
 
                 URLConnection tc = u.openConnection();
@@ -212,20 +226,21 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
                 try {
                     JSONObject jo = new JSONObject(in.readLine());
+
                     d.setTotalAmount(jo.getJSONObject("info").getInt("totalAmount"));
                     d.setTotalPaid(jo.getJSONObject("info").getInt("totalPaid"));
                     d.setUserNotes(jo.getJSONObject("info").getString("text"));
 
                     return d;
                 } catch (JSONException e) {
-//                    Log.d("", e.toString());
+                    Log.d("", e.toString());
                 }
 
 
             } catch (NullPointerException e ){
-//                Log.d("", e.toString());
+                Log.d("", e.toString());
             } catch (Exception e) {
-//                Log.d("", e.toString());
+                Log.d("", e.toString());
             }
             return null;
         }
@@ -253,7 +268,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 }
             } else {
                 Toast.makeText(getApplicationContext(), R.string.smth_wrong2, Toast.LENGTH_LONG).show();
-                finish();
+		finish();
             }
         }
     }
@@ -267,6 +282,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
         protected Bitmap doInBackground(String... urls) {
             String url = urls[0];
+
             Bitmap mBitmap = null;
 
             try {
@@ -274,7 +290,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 mBitmap = BitmapFactory.decodeStream(new FileInputStream(file));
             }
             catch (FileNotFoundException e) {
-//                Log.d("", e.toString());
+                Log.d("", e.toString());
             }
 
             return mBitmap;
@@ -306,7 +322,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 jsonParams.put(
                         new JSONObject()
                                 .put("deviceId", API_DEVICEID)
-				.put("type", "IceCream")
+                                .put("type", "IceCream")
                                 .put("time", new JSONObject().put("sec", System.currentTimeMillis() / 1000).put("usec", 0))
                                 .put("data", new JSONObject().put("userId", userId).put("amount", portionCount))
                 );
@@ -324,11 +340,11 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                         return true;
                     }
                 } catch (JSONException e) {
-//                    Log.d("", e.toString());
+                    Log.d("", e.toString());
                     return false;
                 }
             } catch (Exception e) {
-//                Log.d("", e.toString());
+                Log.d("", e.toString());
                 return false;
             }
 
@@ -355,7 +371,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 ecommerceTracker.send(
                         new HitBuilders.ItemBuilder()
                                 .setTransactionId(transactioId)
-                                .setName("IceScream")
+                                .setName("IceCream")
                                 .setSku("1")
                                 .setPrice(ICE_PRICE)
                                 .setQuantity(portionCount)
