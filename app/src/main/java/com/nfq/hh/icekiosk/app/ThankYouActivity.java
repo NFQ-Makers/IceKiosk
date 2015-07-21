@@ -77,7 +77,7 @@ public class ThankYouActivity extends BaseActivity implements View.OnClickListen
         timer.cancel();
 
         Intent i = new Intent(getApplicationContext(), MainActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         i.setAction("action" + System.currentTimeMillis());
         startActivity(i);
     }
