@@ -202,8 +202,11 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 new LoadUserInfoTask().execute(d);
                 new DownloadImageTask((ImageView) findViewById(R.id.imageUser)).execute(d.getUserImageUrl());
             } else {
-		Toast.makeText(getApplicationContext(), R.string.smth_wrong, Toast.LENGTH_LONG).show();
-		finish();
+                // smth is wrong show sad face :(
+                Intent i = new Intent(getApplicationContext(), AlienActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                i.setAction("action" + System.currentTimeMillis());
+                startActivity(i);
             }
         }
     }
@@ -268,7 +271,11 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 }
             } else {
                 Toast.makeText(getApplicationContext(), R.string.smth_wrong2, Toast.LENGTH_LONG).show();
-		finish();
+
+                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                i.setAction("action" + System.currentTimeMillis());
+                startActivity(i);
             }
         }
     }

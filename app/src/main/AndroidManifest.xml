@@ -67,6 +67,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.nfq.hh.icekiosk.app.BaseActivity" />
         </activity>
+        <activity
+            android:name=".AlienActivity"
+            android:label="@string/title_activity_alien" >
+        </activity>
     </application>
 
 </manifest>
