@@ -23,5 +23,6 @@
     <screenName name="com.nfq.hh.icekiosk.app.MainActivity">MainActivity</screenName>
     <screenName name="com.nfq.hh.icekiosk.app.UserActivity">UserActivity</screenName>
     <screenName name="com.nfq.hh.icekiosk.app.ThankYouActivity">ThankYouActivity</screenName>
+    <screenName name="com.nfq.hh.icekiosk.app.AlienActivity">AlienActivity</screenName>
 
 </resources>

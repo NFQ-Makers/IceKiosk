@@ -9,8 +9,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
-import java.util.Properties;
-
 public class BaseActivity extends Activity implements View.OnKeyListener {
 
     protected Typeface tfChaparralProRegular, tfChaparralProBold, tfChaparralProItalic;
