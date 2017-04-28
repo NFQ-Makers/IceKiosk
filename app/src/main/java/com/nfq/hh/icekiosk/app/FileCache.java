@@ -7,20 +7,12 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class FileCache {
 
@@ -50,8 +42,7 @@ public class FileCache {
         file = new File(cacheDir, filename);
 
         if (!file.isFile()) {
-
-            HttpClient httpclient = new NfqHttpClient(context);
+            HttpClient httpclient = new DefaultHttpClient();
             HttpGet httpGet = new HttpGet(url);
             HttpResponse response;
 

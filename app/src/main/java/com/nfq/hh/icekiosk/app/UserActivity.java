@@ -1,6 +1,5 @@
 package com.nfq.hh.icekiosk.app;
 
-import android.app.Application;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -214,14 +213,32 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 TextView userName = (TextView) findViewById(R.id.userName);
                 userName.setText(d.getUserName());
                 userName.setTypeface(tfSourceSansProBold);
+
+                TextView tvTotalAmount = (TextView) findViewById(R.id.totalAmount);
+                tvTotalAmount.setTypeface(tfSourceSansProRegular);
+                tvTotalAmount.setText("Suvalgei: " + String.valueOf(d.getTotalAmount()));
+
+                TextView tvTotalPaid = (TextView) findViewById(R.id.totalPaid);
+                tvTotalPaid.setTypeface(tfSourceSansProRegular);
+                tvTotalPaid.setText("Apmokėjai: " + String.valueOf(d.getTotalPaid()));
+
+                if (d.getTotalAmount() - d.getTotalPaid() != 0) {
+                    payButton.setAlpha((float)1);
+                    payButton.setClickable(true);
+                }
+
+                UserActivity.this.d = d;
+
                 new LoadUserInfoTask().execute(d);
                 new DownloadImageTask((ImageView) findViewById(R.id.imageUser)).execute(d.getUserImageUrl());
             } else {
                 // smth is wrong show sad face :(
                 Intent i = new Intent(getApplicationContext(), AlienActivity.class);
+
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 i.setAction("action" + System.currentTimeMillis());
                 i.putExtra("userId", userId);
+
                 startActivity(i);
             }
         }
@@ -269,34 +286,12 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
         }
 
         protected void onPostExecute(UserData d) {
-            if (d != null) {
-                TextView tvTotalAmount = (TextView) findViewById(R.id.totalAmount);
-                tvTotalAmount.setTypeface(tfSourceSansProRegular);
-                tvTotalAmount.setText("Suvalgei: " + String.valueOf(d.getTotalAmount()));
+            TextView userNotes = (TextView) findViewById(R.id.userNotes);
 
+            userNotes.setText(Html.fromHtml(d.getUserNotes()));
+            userNotes.setTypeface(tfSourceSansProRegular);
 
-                TextView tvTotalPaid = (TextView) findViewById(R.id.totalPaid);
-                tvTotalPaid.setTypeface(tfSourceSansProRegular);
-                tvTotalPaid.setText("Apmokėjai: " + String.valueOf(d.getTotalPaid()));
-
-                TextView userNotes = (TextView) findViewById(R.id.userNotes);
-                userNotes.setText(Html.fromHtml(d.getUserNotes()));
-                userNotes.setTypeface(tfSourceSansProRegular);
-
-                UserActivity.this.d = d;
-
-                if (d.getTotalAmount() - d.getTotalPaid() != 0) {
-                    payButton.setAlpha((float)1);
-                    payButton.setClickable(true);
-                }
-            } else {
-                Toast.makeText(getApplicationContext(), R.string.smth_wrong2, Toast.LENGTH_LONG).show();
-
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                i.setAction("action" + System.currentTimeMillis());
-                startActivity(i);
-            }
+            UserActivity.this.d = d;
         }
     }
 
@@ -309,7 +304,6 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
         protected Bitmap doInBackground(String... urls) {
             String url = urls[0];
-
             Bitmap mBitmap = null;
 
             try {
