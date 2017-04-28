@@ -29,6 +29,17 @@
                 android:layout_alignParentStart="true" />
 
             <ImageView
+                android:layout_width="150sp"
+                android:layout_height="150sp"
+                android:id="@+id/imageFiller"
+                android:src="@color/background"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="74sp"
+                android:layout_gravity="start"
+                android:layout_alignParentEnd="false"
+                android:layout_alignParentStart="false" />
+
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageView2"
@@ -36,7 +47,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="true"
                 android:visibility="visible"
-                android:layout_marginLeft="155sp"
+                android:layout_marginLeft="150sp"
                 android:background="@android:color/transparent" />
 
             <LinearLayout
@@ -76,13 +87,14 @@
                     android:textSize="24sp" />
 
                 <TextView
+                    android:id="@+id/userNotes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/userNotes"
-                    android:textSize="24sp"
                     android:layout_marginTop="15dp"
                     android:gravity="center"
-                    android:minLines="2" />
+                    android:maxLines="2"
+                    android:minLines="2"
+                    android:textSize="24sp" />
             </LinearLayout>
 
         </RelativeLayout>
