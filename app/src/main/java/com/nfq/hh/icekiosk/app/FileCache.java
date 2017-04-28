@@ -44,10 +44,9 @@ public class FileCache {
     }
 
     public File getFile(String url) {
-        String filename=String.valueOf(url.hashCode());
-        // String filename = URLEncoder.encode(url);
-        File file;
+        String filename = String.valueOf(url.hashCode());
 
+        File file;
         file = new File(cacheDir, filename);
 
         if (!file.isFile()) {

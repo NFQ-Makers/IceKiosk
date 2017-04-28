@@ -14,15 +14,18 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * min 1
@@ -201,46 +204,28 @@ public class PayActivity extends BaseActivity implements View.OnClickListener {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            String url = API_URL_EVENT;
+
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost(API_URL_EVENT);
+            post.setHeader("x-api-token", API_TOKEN);
+
+            List<NameValuePair> postData = new ArrayList<NameValuePair>(3);
+            postData.add(new BasicNameValuePair("type", "IceCreamPay"));
+            postData.add(new BasicNameValuePair(
+                    "amount",
+                    Integer.toString((int) (payAmount / ICE_PRICE)))
+            );
+            postData.add(new BasicNameValuePair("card_number", userId));
+
             try {
-                URL u = new URL(url);
-                HttpURLConnection urlConn = (HttpURLConnection) u.openConnection();
-                urlConn.setRequestMethod("POST");
-                urlConn.setRequestProperty("Content-Type", "application/json");
-                urlConn.setDoOutput(true);
-                urlConn.setDoInput(true);
-                urlConn.connect();
+                post.setEntity(new UrlEncodedFormEntity(postData));
+                HttpResponse response = client.execute(post);
 
-                // [{"time":{"sec":1398619851,"usec":844563},"deviceId":321,"type":"IceCreamPay", "data":{"userId":0,"amount":-1}}]
-                JSONArray jsonParams = new JSONArray();
-                jsonParams.put(
-                        new JSONObject()
-                                .put("deviceId", API_DEVICEID)
-                                .put("type", "IceCreamPay")
-                                .put("time", new JSONObject().put("sec", System.currentTimeMillis() / 1000).put("usec", 0))
-                                .put("data", new JSONObject().put("userId", userId).put("amount", payAmount / -ICE_PRICE))
-                );
-                Log.d("", jsonParams.toString());
-
-                DataOutputStream os = new DataOutputStream(urlConn.getOutputStream());
-                os.write(jsonParams.toString().getBytes("UTF-8"));
-                os.flush();
-                os.close();
-
-                BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-                try {
-                    JSONObject jo = new JSONObject(in.readLine());
-                    // {"status":"ok"}
-                    if (jo.getString("status").equals("ok")) {
-                        return true;
-                    }
-                } catch (JSONException e) {
-//                    Log.d("", e.toString());
-                    return false;
-                }
-            } catch (Exception e) {
-//                Log.d("", e.toString());
-                return false;
+                return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
+            } catch (ClientProtocolException e) {
+                Log.d("", e.toString());
+            } catch (IOException e) {
+                Log.d("", e.toString());
             }
 
             return false;

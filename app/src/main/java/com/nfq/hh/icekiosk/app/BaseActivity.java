@@ -19,8 +19,10 @@ public class BaseActivity extends Activity implements View.OnKeyListener {
     protected final String API_DEVICEID = "IceKiosk_1";
     protected final double ICE_PRICE = 0.25;
     protected final String API_URL_USERDATA = "";
-    protected final String API_URL_USERINFO = "";
+    protected final String API_URL_JOKE = "http://api.icndb.com/jokes/random?firstName=%s&lastName=&limitTo=[nerdy]";
+    protected final String API_TOKEN = "";
     protected final String API_URL_EVENT = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

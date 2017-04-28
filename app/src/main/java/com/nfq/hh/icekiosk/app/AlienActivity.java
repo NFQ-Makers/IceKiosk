@@ -3,6 +3,7 @@ package com.nfq.hh.icekiosk.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,7 +29,12 @@ public class AlienActivity extends BaseActivity implements View.OnClickListener 
         ImageView backButton = (ImageView) findViewById(R.id.alienBackButton);
         backButton.setOnClickListener(this);
 
-        timer = new CountDownTimer(5000, 1000) {
+
+        String userId = getIntent().getStringExtra("userId");
+        String text = getResources().getString(R.string.smth_wrong).replace("%s", userId);
+        tv3.setText(Html.fromHtml(text));
+
+        timer = new CountDownTimer(10000, 1000) {
 
             @Override
             public void onTick(long l) {

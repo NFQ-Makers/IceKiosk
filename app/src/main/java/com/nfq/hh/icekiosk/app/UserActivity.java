@@ -1,5 +1,6 @@
 package com.nfq.hh.icekiosk.app;
 
+import android.app.Application;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,21 +21,27 @@ import com.google.android.gms.analytics.Tracker;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
-import org.json.JSONArray;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserActivity extends BaseActivity implements View.OnClickListener {
 
@@ -159,8 +166,9 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 url = url.replace("%d", userId);
                 URL u = new URL(url);
 
-                HttpClient httpclient = new NfqHttpClient(getBaseContext());
+                HttpClient httpclient = new DefaultHttpClient();
                 HttpGet httpGet = new HttpGet(url);
+                httpGet.setHeader("x-api-token", API_TOKEN);
                 HttpResponse response;
 
                 try {
@@ -171,14 +179,21 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
                     JSONObject jo = new JSONObject(in.readLine());
 
-                    JSONObject person = jo.getJSONArray("people").getJSONObject(0);
+                    JSONObject person = jo.getJSONObject("data");
 
                     UserData d = new UserData();
-                    d.setIntranetId(person.getInt("intranet_id"));
-                    String name[] = person.getString("full_name").split(" ");
-                    d.setUserName(name[0].trim());
-                    d.setUserImageUrl(u.getProtocol() + "://" + u.getHost() + person.getJSONObject("photo").getString("url").replace("avatar/30/30", "media/team"));
-                    d.setIdCard(person.getString("id_card"));
+
+                    d.setIntranetId(person.getInt("id"));
+                    d.setUserName(person.getString("firstName").trim());
+                    d.setUserImageUrl(u.getProtocol() + "://" + u.getHost() + person.getString("avatar"));
+
+                    JSONObject idCards = person.getJSONArray("id_cards").getJSONObject(0);
+                    userId = idCards.getString("card_number");
+
+                    d.setIdCard(userId);
+
+                    d.setTotalAmount(person.getInt("icecream_taken"));
+                    d.setTotalPaid(person.getInt("icecream_paid"));
 
                     return d;
                 } catch (JSONException e) {
@@ -206,46 +221,51 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 Intent i = new Intent(getApplicationContext(), AlienActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 i.setAction("action" + System.currentTimeMillis());
+                i.putExtra("userId", userId);
                 startActivity(i);
             }
         }
     }
 
     private class LoadUserInfoTask extends AsyncTask<UserData, UserData, UserData> {
-
         @Override
         protected UserData doInBackground(UserData... userDatas) {
             UserData d = userDatas[0];
+            d.setUserNotes("");
 
             try {
-                String url = API_URL_USERINFO;
-                url = url.replace("%s", d.getIdCard());
-                url = url.replace(" ", "%20");
-
+                String url = API_URL_JOKE;
+                url = url.replace("%s", d.getUserName());
                 URL u = new URL(url);
 
-                URLConnection tc = u.openConnection();
-                BufferedReader in = new BufferedReader(new InputStreamReader(tc.getInputStream()));
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpGet httpGet = new HttpGet(url);
+                HttpResponse response;
 
                 try {
+                    response = httpclient.execute(httpGet);
+
+                    HttpEntity entity = response.getEntity();
+                    BufferedReader in = new BufferedReader(new InputStreamReader(entity.getContent()));
                     JSONObject jo = new JSONObject(in.readLine());
 
-                    d.setTotalAmount(jo.getJSONObject("info").getInt("totalAmount"));
-                    d.setTotalPaid(jo.getJSONObject("info").getInt("totalPaid"));
-                    d.setUserNotes(jo.getJSONObject("info").getString("text"));
+                    String joke = jo.getJSONObject("value")
+                            .getString("joke")
+                            .replaceAll(" +", " ");
+
+                    d.setUserNotes(joke);
 
                     return d;
                 } catch (JSONException e) {
                     Log.d("", e.toString());
                 }
-
-
             } catch (NullPointerException e ){
                 Log.d("", e.toString());
             } catch (Exception e) {
                 Log.d("", e.toString());
             }
-            return null;
+
+            return d;
         }
 
         protected void onPostExecute(UserData d) {
@@ -314,45 +334,24 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            String url = API_URL_EVENT;
+            HttpClient client = new DefaultHttpClient();
+            HttpPost post = new HttpPost(API_URL_EVENT);
+            post.setHeader("x-api-token", API_TOKEN);
+
+            List<NameValuePair> postData = new ArrayList<NameValuePair>(3);
+            postData.add(new BasicNameValuePair("type", "IceCream"));
+            postData.add(new BasicNameValuePair("amount", portionCount.toString()));
+            postData.add(new BasicNameValuePair("card_number", d.getIdCard()));
+
             try {
-                URL u = new URL(url);
-                HttpURLConnection urlConn = (HttpURLConnection) u.openConnection();
-                urlConn.setRequestMethod("POST");
-                urlConn.setRequestProperty("Content-Type", "application/json");
-                urlConn.setDoOutput(true);
-                urlConn.setDoInput(true);
-                urlConn.connect();
+                post.setEntity(new UrlEncodedFormEntity(postData));
+                HttpResponse response = client.execute(post);
 
-                // [{"time":{"sec":1398619851,"usec":844563},"deviceId":321,"type":"IceCream", "data":{"userId":0,"amount":3}}]
-                JSONArray jsonParams = new JSONArray();
-                jsonParams.put(
-                        new JSONObject()
-                                .put("deviceId", API_DEVICEID)
-                                .put("type", "IceCream")
-                                .put("time", new JSONObject().put("sec", System.currentTimeMillis() / 1000).put("usec", 0))
-                                .put("data", new JSONObject().put("userId", userId).put("amount", portionCount))
-                );
-
-                DataOutputStream os = new DataOutputStream(urlConn.getOutputStream());
-                os.write(jsonParams.toString().getBytes("UTF-8"));
-                os.flush();
-                os.close();
-
-                BufferedReader in = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-                try {
-                    JSONObject jo = new JSONObject(in.readLine());
-                    // {"status":"ok"}
-                    if (jo.getString("status").equals("ok")) {
-                        return true;
-                    }
-                } catch (JSONException e) {
-                    Log.d("", e.toString());
-                    return false;
-                }
-            } catch (Exception e) {
+                return response.getStatusLine().getStatusCode() == HttpStatus.SC_OK;
+            } catch (ClientProtocolException e) {
                 Log.d("", e.toString());
-                return false;
+            } catch (IOException e) {
+                Log.d("", e.toString());
             }
 
             return false;
