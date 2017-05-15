@@ -29,6 +29,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class UserActivity extends BaseActivity implements View.OnClickListener {
@@ -186,9 +188,22 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                     d.setUserName(person.getString("firstName").trim());
                     d.setUserImageUrl(u.getProtocol() + "://" + u.getHost() + person.getString("avatar"));
 
-                    JSONObject idCards = person.getJSONArray("id_cards").getJSONObject(0);
-                    userId = idCards.getString("card_number");
+                    JSONArray cards = person.getJSONArray("id_cards");
 
+                    JSONObject card = null;
+                    for (int i = 0; i < cards.length(); i++) {
+                        JSONObject temp = cards.getJSONObject(i);
+                        if (temp.getString("card_number").equals(userId)) {
+                            card = temp;
+                            break;
+                        }
+                    }
+
+                    if (card == null) {
+                        return null;
+                    }
+
+                    userId = card.getString("card_number");
                     d.setIdCard(userId);
 
                     d.setTotalAmount(person.getInt("icecream_taken"));
@@ -302,13 +317,51 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
             this.bmImage = bmImage;
         }
 
+        protected int calculateInSampleSize(
+                BitmapFactory.Options options,
+                int reqWidth,
+                int reqHeight
+        ) {
+            // Raw height and width of image
+            final int height = options.outHeight;
+            final int width = options.outWidth;
+            int inSampleSize = 1;
+
+            if (height > reqHeight || width > reqWidth) {
+
+                final int halfHeight = height / 2;
+                final int halfWidth = width / 2;
+
+                // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+                // height and width larger than the requested height and width.
+                while ((halfHeight / inSampleSize) >= reqHeight
+                        && (halfWidth / inSampleSize) >= reqWidth) {
+                    inSampleSize *= 2;
+                }
+            }
+
+            return inSampleSize;
+        }
+
         protected Bitmap doInBackground(String... urls) {
             String url = urls[0];
             Bitmap mBitmap = null;
 
             try {
+
+                BitmapFactory.Options options = new BitmapFactory.Options();
                 File file = new FileCache(getBaseContext()).getFile(url);
-                mBitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeStream(new FileInputStream(file), null, options);
+
+                options.inSampleSize = calculateInSampleSize(options, 250, 250);
+                options.inJustDecodeBounds = false;
+
+                mBitmap = BitmapFactory.decodeStream(new FileInputStream(file), null, options);
+            }
+            catch (OutOfMemoryError e) {
+                Log.d("", "No ram mate");
             }
             catch (FileNotFoundException e) {
                 Log.d("", e.toString());
