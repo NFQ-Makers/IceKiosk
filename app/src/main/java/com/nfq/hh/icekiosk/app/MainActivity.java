@@ -8,10 +8,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
 public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private TextView tv1, tv2, tvPortionCount;
@@ -46,17 +42,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onStart() {
         super.onStart();
-
-        //Get an Analytics tracker to report app starts & uncaught exceptions etc.
-        GoogleAnalytics.getInstance(this).reportActivityStart(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-
-        //Stop the analytics tracking
-        GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     public void onClick(View v) {
@@ -115,10 +105,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         if (isOnline()) {
             // strip leading 0 from userId
             keyBoardChars = keyBoardChars.replaceFirst("^0+(?!$)", "");
-
-            Tracker t = GoogleAnalytics.getInstance(this).newTracker(IceKioskApplication.PROPERTY_ID);
-            t.send(new HitBuilders.EventBuilder().setCategory("UX").setAction("User Sign In").setLabel(keyBoardChars).build());
-            t.set("&uid", keyBoardChars);
 
             Intent i = new Intent(getApplicationContext(), UserActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

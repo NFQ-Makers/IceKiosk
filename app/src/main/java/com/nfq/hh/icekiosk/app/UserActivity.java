@@ -13,11 +13,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
-import com.google.android.gms.analytics.Tracker;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -41,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class UserActivity extends BaseActivity implements View.OnClickListener {
@@ -102,7 +96,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
         super.onStart();
 
         //Get an Analytics tracker to report app starts & uncaught exceptions etc.
-        GoogleAnalytics.getInstance(this).reportActivityStart(this);
+        //GoogleAnalytics.getInstance(this).reportActivityStart(this);
     }
 
     @Override
@@ -110,15 +104,15 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
         super.onStop();
 
         //Stop the analytics tracking
-        GoogleAnalytics.getInstance(this).reportActivityStop(this);
+        //GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.cancelButton:
-                Tracker t = GoogleAnalytics.getInstance(this).newTracker(IceKioskApplication.PROPERTY_ID);
-                t.send(new HitBuilders.EventBuilder().setCategory("UX").setAction("User Sign Out").setLabel(userId).build());
+                //Tracker t = GoogleAnalytics.getInstance(this).newTracker(IceKioskApplication.PROPERTY_ID);
+                //t.send(new HitBuilders.EventBuilder().setCategory("UX").setAction("User Sign Out").setLabel(userId).build());
 
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -185,16 +179,15 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                     UserData d = new UserData();
 
                     d.setIntranetId(person.getInt("id"));
-                    d.setUserName(person.getString("firstName").trim());
-                    d.setUserImageUrl(u.getProtocol() + "://" + u.getHost() + person.getString("avatar"));
+                    d.setUserName(person.getString("first_name").trim());
+                    d.setUserImageUrl(IMAGE_URL_HOST + person.getString("avatar"));
 
-                    JSONArray cards = person.getJSONArray("id_cards");
+                    JSONArray cards = person.getJSONArray("cards");
 
-                    JSONObject card = null;
+                    String card = null;
                     for (int i = 0; i < cards.length(); i++) {
-                        JSONObject temp = cards.getJSONObject(i);
-                        if (temp.getString("card_number").equals(userId)) {
-                            card = temp;
+                        if (cards.get(i).equals(userId)) {
+                            card = (String)cards.get(i);
                             break;
                         }
                     }
@@ -203,11 +196,11 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                         return null;
                     }
 
-                    userId = card.getString("card_number");
+                    userId = card;
                     d.setIdCard(userId);
 
-                    d.setTotalAmount(person.getInt("icecream_taken"));
-                    d.setTotalPaid(person.getInt("icecream_paid"));
+                    d.setTotalAmount(person.getInt("ice_cream_taken"));
+                    d.setTotalPaid(person.getInt("ice_cream_paid"));
 
                     return d;
                 } catch (JSONException e) {
@@ -237,7 +230,7 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
                 tvTotalPaid.setTypeface(tfSourceSansProRegular);
                 tvTotalPaid.setText("Apmokėjai: " + String.valueOf(d.getTotalPaid()));
 
-                if (d.getTotalAmount() - d.getTotalPaid() != 0) {
+                if (d.getTotalAmount() > d.getTotalPaid()) {
                     payButton.setAlpha((float)1);
                     payButton.setClickable(true);
                 }
@@ -407,30 +400,6 @@ public class UserActivity extends BaseActivity implements View.OnClickListener {
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
-                Tracker t = GoogleAnalytics.getInstance(getBaseContext()).newTracker(IceKioskApplication.PROPERTY_ID);
-                t.send(new HitBuilders.EventBuilder().setCategory("UX").setAction("User Buy").setLabel(userId).setValue(portionCount).build());
-
-                String transactioId = String.valueOf(System.currentTimeMillis() / 1000);
-                Tracker ecommerceTracker = ((IceKioskApplication) getApplication()).getTracker(IceKioskApplication.TrackerName.ECOMMERCE_TRACKER);
-                ecommerceTracker.send(
-                        new HitBuilders.TransactionBuilder()
-                                .setTransactionId(transactioId)
-                                .setAffiliation(API_DEVICEID)
-                                .setRevenue(portionCount)
-                                .setTax(portionCount * 0.21)
-                                .setShipping(0)
-                                .build()
-                );
-                ecommerceTracker.send(
-                        new HitBuilders.ItemBuilder()
-                                .setTransactionId(transactioId)
-                                .setName("IceCream")
-                                .setSku("1")
-                                .setPrice(ICE_PRICE)
-                                .setQuantity(portionCount)
-                                .build()
-                );
-
                 Intent i = new Intent(getApplicationContext(), ThankYouActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 i.setAction("action" + System.currentTimeMillis());
